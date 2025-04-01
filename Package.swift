@@ -3,25 +3,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "SwiftLlama",
+    name: "LlamaCppSwift",
     platforms: [
         .macOS(.v15),
-        .iOS(.v18),
+        .iOS(.v16),
         .watchOS(.v11),
         .tvOS(.v18),
         .visionOS(.v2)
     ],
     products: [
-        .library(name: "SwiftLlama", targets: ["SwiftLlama"]),
+        .library(name: "LlamaCppSwift", targets: ["LlamaCppSwift"]),
     ],
-    dependencies: [
-        .package(url: "https://github.com/ggerganov/llama.cpp.git", branch: "master")
-    ],
+    dependencies: [],
     targets: [
-        .target(name: "SwiftLlama", 
+        .target(name: "LlamaCppSwift",
                 dependencies: [
-                    .product(name: "llama", package: "llama.cpp")
+                    .target(name: "llama")
                 ]),
-        .testTarget(name: "SwiftLlamaTests", dependencies: ["SwiftLlama"]),
+        .binaryTarget(name: "llama", path: "Frameworks/llama.xcframework")
     ]
 )
