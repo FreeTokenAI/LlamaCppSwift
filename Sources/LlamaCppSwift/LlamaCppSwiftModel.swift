@@ -26,15 +26,15 @@ class LlamaCppSwiftModel {
         model_params.n_gpu_layers = 0
         #endif
         guard let model = llama_model_load_from_file(path, model_params) else {
-            throw SwiftLlamaError.others("Cannot load model at path \(path)")
+            throw LlamaCppSwiftError.others("Cannot load model at path \(path)")
         }
         self.model = model
         guard let context = llama_init_from_model(model, configuration.contextParameters) else {
-            throw SwiftLlamaError.others("Cannot load model context")
+            throw LlamaCppSwiftError.others("Cannot load model context")
         }
         self.context = context
         self.tokens = []
-        self.batch = llama_batch_init(Int32(configuration.batchSize * Configuration.historySize * 2), 0, 1)
+        self.batch = llama_batch_init(Int32(configuration.batchSize), 0, 1)
         self.sampler = llama_sampler_chain_init(llama_sampler_chain_default_params())
         llama_sampler_chain_add(sampler, llama_sampler_init_temp(configuration.temperature))
         llama_sampler_chain_add(sampler, llama_sampler_init_top_k(Int32(configuration.topK)))
@@ -47,7 +47,7 @@ class LlamaCppSwiftModel {
         let n_ctx = llama_n_ctx(context)
         let n_ctx_train = llama_model_n_ctx_train(model)
         if n_ctx > n_ctx_train {
-            throw SwiftLlamaError.others("Model was trained on \(n_ctx_train) context but tokens \(n_ctx) specified")
+            throw LlamaCppSwiftError.others("Model was trained on \(n_ctx_train) context but tokens \(n_ctx) specified")
         }
     }
 
@@ -63,7 +63,7 @@ class LlamaCppSwiftModel {
         batch.logits[Int(batch.n_tokens) - 1] = 1 // true
 
         if llama_decode(context, batch) != 0 {
-            throw SwiftLlamaError.decodeError
+            throw LlamaCppSwiftError.decodeError
         }
         generatedTokenAccount = batch.n_tokens
     }
@@ -80,7 +80,7 @@ class LlamaCppSwiftModel {
         batch.logits[Int(batch.n_tokens) - 1] = 1 // true
 
         if llama_decode(context, batch) != 0 {
-            throw SwiftLlamaError.decodeError
+            throw LlamaCppSwiftError.decodeError
         }
         generatedTokenAccount = batch.n_tokens
     }
@@ -117,7 +117,7 @@ class LlamaCppSwiftModel {
         generatedTokenAccount += 1
 
         if llama_decode(context, batch) != 0 {
-            throw SwiftLlamaError.decodeError
+            throw LlamaCppSwiftError.decodeError
         }
         return newTokenStr
     }

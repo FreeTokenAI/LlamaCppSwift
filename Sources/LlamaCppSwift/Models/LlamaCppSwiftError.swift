@@ -1,6 +1,6 @@
 import Foundation
 
-public enum SwiftLlamaError: Error {
+public enum LlamaCppSwiftError: Error {
     case decodeError
     case others(String)
 }
